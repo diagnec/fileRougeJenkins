@@ -1,0 +1,42 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:15
+    container_name: odc_postgres
+    environment:
+      POSTGRES_DB: odcdb
+      POSTGRES_USER: odcuser
+      POSTGRES_PASSWORD: odcpass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  backend:
+    build: ./backend
+    container_name: odc_backend
+    image: odc_backend_image
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_NAME=odcdb
+      - DB_USER=odcuser
+      - DB_PASSWORD=odcpass
+      - DB_HOST=db  # Cela fait référence au service 'db'
+    depends_on:
+      - db  # Le backend attend que db soit lancé avant de démarrer
+
+  frontend:
+    build: ./frontend
+    container_name: odc_frontend
+    image: odc_frontend_image
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:

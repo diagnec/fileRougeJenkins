@@ -1,0 +1,78 @@
+pipeline {
+    agent {
+        docker {
+            image 'python:3.10'
+            args '-u root'
+        }
+    }
+
+    environment {
+        DOCKER_HUB_CREDENTIALS = credentials('github-creds_odc')
+        IMAGE_BACKEND = 'mormbathie/odc_backend'
+        IMAGE_FRONTEND = 'mormbathie/odc_frontend'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'Main', url: 'https://github.com/mormbathie/projetfilerougedock.git'
+            }
+        }
+
+        stage('Tests Backend') {
+            steps {
+                dir('backend') {
+                    sh 'pip install -r requirements.txt'
+                    echo 'Pas encore de tests à exécuter.'
+                }
+            }
+        }
+
+        stage('Build Backend Image') {
+            steps {
+                script {
+                    def backendImage = docker.build("${env.IMAGE_BACKEND}", "./backend")
+                }
+            }
+        }
+
+        stage('Build Frontend Image') {
+            steps {
+                dir('frontend') {
+                    sh 'npm install'
+                    sh 'npm run build'
+                }
+                script {
+                    def frontendImage = docker.build("${env.IMAGE_FRONTEND}", "./frontend")
+                }
+            }
+        }
+
+        stage('Push Docker Images') {
+            steps {
+                script {
+                    docker.withRegistry('', "${DOCKER_HUB_CREDENTIALS}") {
+                        docker.image("${env.IMAGE_BACKEND}").push()
+                        docker.image("${env.IMAGE_FRONTEND}").push()
+                    }
+                }
+            }
+        }
+
+        stage('Deploy (Compose)') {
+            steps {
+                sh 'docker-compose down || true'
+                sh 'docker-compose up -d'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "✅ Build succeeded"
+        }
+        failure {
+            echo "❌ Build failed"
+        }
+    }
+}
