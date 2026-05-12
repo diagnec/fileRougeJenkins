@@ -8,8 +8,8 @@ pipeline {
 
     environment {
         DOCKER_HUB_CREDENTIALS = credentials('github-creds_odc')
-        IMAGE_BACKEND = 'mormbathie/odc_backend'
-        IMAGE_FRONTEND = 'mormbathie/odc_frontend'
+        IMAGE_BACKEND = 'cheikh9708/odc_backend'
+        IMAGE_FRONTEND = 'cheikh9708/odc_frontend'
     }
 
     stages {
@@ -31,7 +31,7 @@ pipeline {
         stage('Build Backend Image') {
             steps {
                 script {
-                    def backendImage = docker.build("${env.IMAGE_BACKEND}", "./backend")
+                    def backendImage = docker.build("${env.IMAGE_BACKEND}", "./backend1")
                 }
             }
         }
@@ -43,7 +43,7 @@ pipeline {
                     sh 'npm run build'
                 }
                 script {
-                    def frontendImage = docker.build("${env.IMAGE_FRONTEND}", "./frontend")
+                    def frontendImage = docker.build("${env.IMAGE_FRONTEND}", "./frontend1")
                 }
             }
         }
