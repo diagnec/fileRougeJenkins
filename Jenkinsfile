@@ -18,15 +18,14 @@ pipeline {
             }
         }
 
-       stage('Backend Tests') {
-          steps {
-            sh '''
-            ls -R backend
+      stage('Backend Tests') {
+         steps {
+        sh '''
             docker run --rm \
-              -v $PWD:/app \
-              -w /app/backend \
+              -v $PWD/backend:/app \
+              -w /app \
               python:3.10 \
-              pip install -r requirements.txt
+              bash -c "pip install -r requirements.txt"
         '''
     }
 }
