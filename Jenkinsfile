@@ -15,7 +15,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'Main', url: 'https://github.com/diagnec/fileRougeJenkins.git'
+                git branch: 'main', url: 'https://github.com/diagnec/fileRougeJenkins.git'
             }
         }
 
