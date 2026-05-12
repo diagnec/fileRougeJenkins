@@ -7,7 +7,7 @@ pipeline {
     }
 
     environment {
-        DOCKER_HUB_CREDENTIALS = credentials('github-creds_odc')
+        DOCKER_HUB_CREDENTIALS = credentials('jenkins')
         IMAGE_BACKEND = 'cheikh9708/odc_backend'
         IMAGE_FRONTEND = 'cheikh9708/odc_frontend'
     }
