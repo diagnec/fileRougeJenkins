@@ -18,17 +18,16 @@ pipeline {
             }
         }
 
-        stage('Backend Tests') {
-          agent {
-            docker {
-            image 'python:3.10'
-        }
-    }
-
-    steps {
-        dir('backend') {
-            sh 'pip install -r requirements.txt'
-        }
+       stage('Backend Tests') {
+          steps {
+            sh '''
+            ls -R backend
+            docker run --rm \
+              -v $PWD:/app \
+              -w /app/backend \
+              python:3.10 \
+              pip install -r requirements.txt
+        '''
     }
 }
         stage('Build Backend Image') {
