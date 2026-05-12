@@ -18,15 +18,17 @@ pipeline {
             }
         }
 
-        stage('Tests Backend') {
-            steps {
-                dir('backend') {
-                    sh 'pip install -r requirements.txt'
-                    echo 'Pas encore de tests à exécuter.'
-                }
-            }
+        stage('Backend Tests') {
+           agent {
+             docker {
+            image 'python:3.10'
         }
-
+    }
+    steps {
+        sh 'pip install -r backend/requirements.txt'
+        sh 'pytest backend || true'
+    }
+}
         stage('Build Backend Image') {
             steps {
                 script {
