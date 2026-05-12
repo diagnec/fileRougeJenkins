@@ -1,8 +1,8 @@
 pipeline {
-    agent {
-        docker {
-            image 'python:3.10'
-        }
+     agent any
+
+    options {
+        skipDefaultCheckout(true)
     }
 
     environment {
