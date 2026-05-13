@@ -52,12 +52,12 @@ pipeline {
         }
     }
 }
-        stage('Push Docker Images') {
-       docker.withRegistry('https://index.docker.io/v1/', 'token') {
-    sh "docker push ${env.IMAGE_BACKEND}"
-    sh "docker push ${env.IMAGE_FRONTEND}"
-}
-}             
+         stage('Push Docker Images') {
+          docker.withRegistry('https://index.docker.io/v1/', 'token') {
+          sh "docker push ${env.IMAGE_BACKEND}"
+          sh "docker push ${env.IMAGE_FRONTEND}"
+     }
+   }             
 
         stage('Deploy (Compose)') {
             steps {
