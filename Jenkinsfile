@@ -18,14 +18,18 @@ pipeline {
             }
         }
 
-      stage('Backend Tests') {
-         steps {
-          dir('backend') {
+    stage('Backend Tests') {
+        steps {
+        dir('backend') {
             sh '''
-            ls -la
-
-            pip install -r requirements.txt
-            python manage.py test
+            docker run --rm \
+              -v $(pwd):/app \
+              -w /app \
+              python:3.10 \
+              sh -c "
+                pip install -r requirements.txt &&
+                python manage.py test
+              "
             '''
         }
     }
