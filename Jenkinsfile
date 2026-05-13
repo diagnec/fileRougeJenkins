@@ -53,15 +53,11 @@ pipeline {
     }
 }
         stage('Push Docker Images') {
-            steps {
-                script {
-                    docker.withRegistry('', "${DOCKER_HUB_CREDENTIALS}") {
-                        docker.image("${env.IMAGE_BACKEND}").push()
-                        docker.image("${env.IMAGE_FRONTEND}").push()
-                    }
-                }
-            }
-        }
+       docker.withRegistry('https://index.docker.io/v1/', 'token') {
+    sh "docker push ${env.IMAGE_BACKEND}"
+    sh "docker push ${env.IMAGE_FRONTEND}"
+}
+}             
 
         stage('Deploy (Compose)') {
             steps {
