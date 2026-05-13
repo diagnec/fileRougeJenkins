@@ -14,7 +14,7 @@ services:
       - "5432:5432"
 
   backend:
-    build: ./backend1
+    build: ./backend
     container_name: odc_backend
     image: odc_backend_image
     volumes:
@@ -30,7 +30,7 @@ services:
       - db
 
   frontend:
-    build: ./frontend1
+    build: ./frontend
     container_name: odc_frontend
     image: odc_frontend_image
     ports:
