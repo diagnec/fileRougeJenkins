@@ -40,18 +40,18 @@ pipeline {
             }
         }
 
-        stage('Build Frontend Image') {
-            steps {
-                dir('frontend') {
-                    sh 'npm install'
-                    sh 'npm run build'
-                }
-                script {
-                    def frontendImage = docker.build("${env.IMAGE_FRONTEND}", "./frontend")
-                }
-            }
-        }
+      stage('Build Frontend Image') {
+    steps {
+        dir('frontend') {
+            sh '''
+            npm install
+            npm run build
+            '''
 
+            sh 'docker build -t cheikh9708/odc_frontend .'
+        }
+    }
+}
         stage('Push Docker Images') {
             steps {
                 script {
