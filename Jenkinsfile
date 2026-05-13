@@ -35,7 +35,7 @@ pipeline {
         stage('Build Backend Image') {
             steps {
                 script {
-                    def backendImage = docker.build("${env.IMAGE_BACKEND}", "./backend1")
+                    def backendImage = docker.build("${env.IMAGE_BACKEND}", "./backend")
                 }
             }
         }
@@ -47,7 +47,7 @@ pipeline {
                     sh 'npm run build'
                 }
                 script {
-                    def frontendImage = docker.build("${env.IMAGE_FRONTEND}", "./frontend1")
+                    def frontendImage = docker.build("${env.IMAGE_FRONTEND}", "./frontend")
                 }
             }
         }
