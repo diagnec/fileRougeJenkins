@@ -1,63 +1,69 @@
 pipeline {
-     agent any
+    agent any
 
     options {
         skipDefaultCheckout(true)
     }
 
     environment {
-        DOCKER_HUB_CREDENTIALS = credentials('token')
         IMAGE_BACKEND = 'cheikh9708/odc_backend'
         IMAGE_FRONTEND = 'cheikh9708/odc_frontend'
     }
 
     stages {
+
         stage('Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/diagnec/fileRougeJenkins.git'
             }
         }
-     stage('Backend Tests') {
-       steps {
-        dir('backend') {
-            sh '''
-            python3 -m venv venv
 
-            . venv/bin/activate
-
-            pip install -r requirements.txt
-
-            python manage.py test
-            '''
-        }
-    }
-}
-        stage('Build Backend Image') {
+        stage('Backend Tests') {
             steps {
-                script {
-                    def backendImage = docker.build("${env.IMAGE_BACKEND}", "./backend")
+                dir('backend') {
+                    sh '''
+                    python3 -m venv venv
+                    . venv/bin/activate
+                    pip install -r requirements.txt
+                    python manage.py test
+                    '''
                 }
             }
         }
 
-      stage('Build Frontend Image') {
-    steps {
-        dir('frontend') {
-            sh '''
-            npm install
-            npm run build
-            '''
-
-            sh 'docker build -t cheikh9708/odc_frontend .'
+        stage('Build Backend Image') {
+            steps {
+                script {
+                    docker.build("${env.IMAGE_BACKEND}", "./backend")
+                }
+            }
         }
-    }
-}
-         stage('Push Docker Images') {
-          docker.withRegistry('https://index.docker.io/v1/', 'token') {
-          sh "docker push ${env.IMAGE_BACKEND}"
-          sh "docker push ${env.IMAGE_FRONTEND}"
-     }
-   }             
+
+        stage('Build Frontend Image') {
+            steps {
+                dir('frontend') {
+                    sh '''
+                    npm install
+                    npm run build
+                    '''
+                }
+
+                script {
+                    docker.build("${env.IMAGE_FRONTEND}", "./frontend")
+                }
+            }
+        }
+
+        stage('Push Docker Images') {
+            steps {
+                script {
+                    docker.withRegistry('https://index.docker.io/v1/', 'token') {
+                        docker.image("${env.IMAGE_BACKEND}").push()
+                        docker.image("${env.IMAGE_FRONTEND}").push()
+                    }
+                }
+            }
+        }
 
         stage('Deploy (Compose)') {
             steps {
