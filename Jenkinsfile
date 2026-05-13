@@ -17,13 +17,17 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/diagnec/fileRougeJenkins.git'
             }
         }
-
-      stage('Backend Tests') {
-        steps {
+     stage('Backend Tests') {
+       steps {
         dir('backend') {
             sh '''
-            python3 -m pip install -r requirements.txt
-            python3 manage.py test
+            python3 -m venv venv
+
+            . venv/bin/activate
+
+            pip install -r requirements.txt
+
+            python manage.py test
             '''
         }
     }
